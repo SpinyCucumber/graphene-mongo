@@ -6,7 +6,7 @@ from graphene.types.json import JSONString
 from mongoengine.base import get_document
 
 from . import advanced_types
-from .fields import MapField
+from .helper_fields import MapField
 from .utils import import_single_dispatch, get_field_description
 
 singledispatch = import_single_dispatch()
