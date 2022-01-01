@@ -23,7 +23,10 @@ def test_should_query_editor(fixtures, fixtures_dirname):
         query EditorQuery {
             editor {
                 firstName,
-                metadata,
+                metadata {
+                    key,
+                    value
+                },
                 company {
                     name
                 },
@@ -50,6 +53,7 @@ def test_should_query_editor(fixtures, fixtures_dirname):
         "editor": {
             "firstName": "Penny",
             "company": {"name": "Newsco"},
+            "metadata": [{"key": "age", "value": "20"}, {"key": "nickname", "value": "$1"}],
             "avatar": {
                 "contentType": "image/jpeg",
                 "chunkSize": 261120,
@@ -64,13 +68,10 @@ def test_should_query_editor(fixtures, fixtures_dirname):
             {"firstName": "Dennis", "lastName": "Rodman"},
         ],
     }
-    expected_metadata = {"age": "20", "nickname": "$1"}
 
     schema = graphene.Schema(query=Query)
     result = schema.execute(query)
     assert not result.errors
-    metadata = result.data["editor"].pop("metadata")
-    assert json.loads(metadata) == expected_metadata
     assert result.data == expected
 
 
