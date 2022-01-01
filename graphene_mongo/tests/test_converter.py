@@ -316,7 +316,7 @@ def test_should_description_convert_common_metadata():
     metadata_field = convert_mongoengine_field(
         Editor._fields["metadata"], A._meta.registry
     )
-    assert metadata_field.kwargs["description"] == "Arbitrary metadata."
+    assert metadata_field.description == "Arbitrary metadata."
 
 
 def test_should_description_convert_reference_metadata():
