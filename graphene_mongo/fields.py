@@ -202,16 +202,17 @@ class MongoengineConnectionField(ConnectionField):
                     hydrated_references[arg_name] = reference_obj
             args.update(hydrated_references)
 
-        # Construct base queryset
         # Allow user to override base queryset using _get_queryset
+        # Users can also override filters by providing a dict to get_queryset
+        queryset = None
         if self._get_queryset:
             queryset_or_filters = self._get_queryset(model, info, **args)
             if isinstance(queryset_or_filters, mongoengine.QuerySet):
                 queryset = queryset_or_filters
             else:
                 args.update(queryset_or_filters)
-                # Default base queryset
-                queryset = model.objects(**args)
+        # Default base queryset
+        if not queryset: queryset = model.objects(**args)
         
         search = args.pop('search', None)
         order_by = args.pop('order_by', None)
