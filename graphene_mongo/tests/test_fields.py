@@ -11,7 +11,7 @@ def test_article_field_args():
     reference_args = {"editor", "reporter"}
     assert set(field.reference_args.keys()) == reference_args
 
-    default_args = {"after", "last", "first", "before"}
+    default_args = {"order_by", "after", "last", "first", "before"}
     args = field_args | reference_args | default_args
     assert set(field.args) == args
 
