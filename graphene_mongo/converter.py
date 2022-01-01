@@ -6,6 +6,7 @@ from graphene.types.json import JSONString
 from mongoengine.base import get_document
 
 from . import advanced_types
+from .fields import MapField
 from .utils import import_single_dispatch, get_field_description
 
 singledispatch = import_single_dispatch()
@@ -72,12 +73,38 @@ def convert_field_to_datetime(field, registry=None):
 
 
 @convert_mongoengine_field.register(mongoengine.DictField)
-@convert_mongoengine_field.register(mongoengine.MapField)
 def convert_field_to_jsonstring(field, registry=None):
     return JSONString(
         description=get_field_description(field, registry), required=field.required
     )
 
+@convert_mongoengine_field.register(mongoengine.MapField)
+def convert_field_to_map(field, registry=None):
+    base_type = convert_mongoengine_field(field.field, registry=registry)
+    if isinstance(base_type, graphene.Field):
+        return MapField(
+            base_type._type,
+            description=get_field_description(field, registry),
+            required=field.required
+        )
+    if isinstance(base_type, (graphene.Dynamic)):
+        base_type = base_type.get_type()
+        if base_type is None:
+            return
+        base_type = base_type._type
+
+    # Non-relationship field
+    relations = (mongoengine.ReferenceField, mongoengine.EmbeddedDocumentField)
+    if not isinstance(base_type, (graphene.List, graphene.NonNull)) and not isinstance(
+        field.field, relations
+    ):
+        base_type = type(base_type)
+
+    return MapField(
+        base_type,
+        description=get_field_description(field, registry),
+        required=field.required,
+    )
 
 @convert_mongoengine_field.register(mongoengine.PointField)
 def convert_point_to_field(field, registry=None):
