@@ -72,6 +72,7 @@ class MongoengineObjectTypeOptions(ObjectTypeOptions):
     connection = None
     filter_fields = ()
     order_by = None
+    searchable = False
 
 
 class MongoengineObjectType(ObjectType):

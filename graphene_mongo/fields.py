@@ -54,10 +54,10 @@ class MongoengineConnectionField(ConnectionField):
     @property
     def model(self):
         return self.node_type._meta.model
-
+    
     @property
-    def order_by(self):
-        return self.node_type._meta.order_by
+    def searchable(self):
+        return self.node_type._meta.searchable
 
     @property
     def registry(self):
@@ -65,9 +65,18 @@ class MongoengineConnectionField(ConnectionField):
 
     @property
     def args(self):
+        # Add a search argument if the node type is marked as searchable
+        # We also add an 'order_by' argument
+        extra_args = {'order_by': graphene.String()}
+        if (self.searchable): extra_args['search'] = graphene.String()
         return to_arguments(
             self._base_args or OrderedDict(),
-            dict(dict(self.field_args, **self.reference_args), **self.filter_args),
+            {
+                **self.field_args,
+                **self.filter_args,
+                **self.reference_args,
+                **extra_args
+            }
         )
 
     @args.setter
@@ -193,13 +202,29 @@ class MongoengineConnectionField(ConnectionField):
                     hydrated_references[arg_name] = reference_obj
             args.update(hydrated_references)
 
+        # Construct base queryset
+        # Allow user to override base queryset using _get_queryset
         if self._get_queryset:
             queryset_or_filters = self._get_queryset(model, info, **args)
             if isinstance(queryset_or_filters, mongoengine.QuerySet):
-                return queryset_or_filters
+                queryset = queryset_or_filters
             else:
                 args.update(queryset_or_filters)
-        return model.objects(**args).order_by(self.order_by)
+                # Default base queryset
+                queryset = model.objects(**args)
+        
+        search = args.pop('search', None)
+        order_by = args.pop('order_by', None)
+        # Apply 'search' and 'order_by' args if specified
+        if search:
+            queryset = queryset.search_text(search)
+        if order_by:
+            if order_by == 'relevance':
+                if search: queryset = queryset.order_by('$text_score')
+            else:
+                queryset = queryset.order_by(order_by)
+        
+        return queryset
 
     def default_resolver(self, _root, info, **args):
         args = args or {}
