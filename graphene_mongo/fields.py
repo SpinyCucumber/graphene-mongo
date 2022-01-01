@@ -122,8 +122,8 @@ class MongoengineConnectionField(ConnectionField):
             if isinstance(converted, (graphene.List)) and not issubclass(
                 getattr(converted, "_of_type", None), graphene.Scalar):
                 return False
-            if getattr(converted, "type", None) and getattr(converted.type, "_of_type", None) and issubclass(
-                    (get_type(converted.type.of_type)), graphene.Union):
+            if getattr(converted, "type", None) and getattr(converted.type, "_of_type", None) and not issubclass(
+                    (get_type(converted.type.of_type)), graphene.Scalar):
                 return False
 
             return True
