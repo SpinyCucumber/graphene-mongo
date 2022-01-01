@@ -108,8 +108,9 @@ class MongoengineConnectionField(ConnectionField):
                 ),
             ):
                 return False
-            if isinstance(converted, (graphene.List)) and issubclass(
-                getattr(converted, "_of_type", None), graphene.Union
+            # Fix to https://github.com/graphql-python/graphene-mongo/issues/162
+            if isinstance(converted, (graphene.List)) and not issubclass(
+                getattr(converted, "_of_type", None), graphene.Scalar
             ):
                 return False
 
