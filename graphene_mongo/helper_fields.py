@@ -18,10 +18,10 @@ def get_entry_type(value_type):
 
 class MapField(graphene.Field):
 
-    def __init__(self, value_type, **kw_args):
+    def __init__(self, value_type, *args, **kw_args):
         # Define field type as entry type
         _type = graphene.List(get_entry_type(value_type))
-        super(MapField, self).__init__(_type, **kw_args)
+        super(MapField, self).__init__(_type, *args, **kw_args)
 
     @classmethod
     def resolve_map(cls, resolved):

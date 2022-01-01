@@ -17,6 +17,7 @@ from .. import registry
 from .. import advanced_types
 from ..converter import convert_mongoengine_field
 from ..fields import MongoengineConnectionField
+from ..helper_fields import MapField
 from ..types import MongoengineObjectType
 
 
@@ -86,11 +87,9 @@ def test_should_dict_convert_json():
     assert_conversion(mongoengine.DictField, graphene.JSONString)
 
 
-def test_should_map_convert_json():
-    assert_conversion(
-        mongoengine.MapField, graphene.JSONString, field=mongoengine.StringField()
-    )
-
+def test_should_map_convert_field():
+    graphene_type = convert_mongoengine_field(mongoengine.MapField(mongoengine.StringField()))
+    assert isinstance(graphene_type, MapField)
 
 def test_should_point_convert_field():
     graphene_type = convert_mongoengine_field(mongoengine.PointField())
