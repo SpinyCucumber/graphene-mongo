@@ -214,11 +214,12 @@ class MongoengineConnectionField(ConnectionField):
                 queryset = queryset_or_filters
             else:
                 args.update(queryset_or_filters)
-        # Default base queryset
-        if not queryset: queryset = model.objects(**args)
-        
+        # Pop before constructing queryset so we don't try to resolving fields that don't exist
+        # If queryset isn't specified already we construct "default" queryset
         search = args.pop('search', None)
         order_by = args.pop('order_by', None)
+        if not queryset: queryset = model.objects(**args)
+        
         # Apply 'search' and 'order_by' args if specified
         if search:
             queryset = queryset.search_text(search)
