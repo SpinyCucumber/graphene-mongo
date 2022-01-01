@@ -85,6 +85,7 @@ class MongoengineObjectType(ObjectType):
         only_fields=(),
         exclude_fields=(),
         filter_fields=None,
+        searchable=False,
         connection=None,
         connection_class=None,
         use_connection=None,
@@ -153,6 +154,7 @@ class MongoengineObjectType(ObjectType):
         _meta.registry = registry
         _meta.fields = mongoengine_fields
         _meta.filter_fields = filter_fields
+        _meta.searchable = searchable
         _meta.connection = connection
         _meta.connection_field_class = connection_field_class
         # Save them for later
