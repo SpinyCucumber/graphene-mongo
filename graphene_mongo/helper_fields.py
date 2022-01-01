@@ -17,6 +17,10 @@ def get_entry_type(value_type):
     return entry_type
 
 class MapField(graphene.Field):
+    """
+    A map field can be used to expose a python dict as a list of entries, where each entry has
+    a String 'key' and a 'value' of a user-supplied type. Can be used with mongoengine.MapField 
+    """
 
     def __init__(self, value_type, *args, **kw_args):
         # Define field type as entry type
