@@ -486,6 +486,42 @@ def test_should_filter_by_id(fixtures):
     assert not result.errors
     assert result.data == expected
 
+def test_should_query_filtered_list(fixtures):
+    class Query(graphene.ObjectType):
+        reporters = MongoengineConnectionField(nodes.ReporterNode)
+
+    query = """
+        query ReporterQuery {
+            reporters(awards_All: ["2010-mvp"]) {
+                edges {
+                    node {
+                        firstName,
+                        lastName,
+                        email,
+                    }
+                }
+            }
+        }
+    """
+    expected = {
+        "reporters": {
+            "edges": [
+                {
+                    "node": {
+                        "firstName": "Allen",
+                        "lastName": "Iverson",
+                        "email": "ai@gmail.com",
+                    }
+                }
+            ]
+        }
+    }
+
+    schema = graphene.Schema(query=Query)
+    result = schema.execute(query)
+    assert not result.errors
+    assert result.data == expected
+
 
 def test_should_first_n(fixtures):
     class Query(graphene.ObjectType):

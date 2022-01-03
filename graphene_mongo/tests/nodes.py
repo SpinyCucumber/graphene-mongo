@@ -45,6 +45,7 @@ class ReporterNode(MongoengineObjectType):
     class Meta:
         model = models.Reporter
         interfaces = (Node,)
+        filter_fields = {"awards": ["all", "neq"]}
 
 
 class ParentNode(MongoengineObjectType):
