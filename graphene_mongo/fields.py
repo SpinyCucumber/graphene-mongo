@@ -148,10 +148,6 @@ class MongoengineConnectionField(ConnectionField):
         if self._type._meta.filter_fields:
             for field, filter_collection in self._type._meta.filter_fields.items():
                 for each in filter_collection:
-                    filter_type = getattr(
-                        graphene,
-                        str(self._type._meta.fields[field].type).replace("!", ""),
-                    )
                     filter_type = self._type._meta.fields[field].type
                     # Convert to scalar
                     while isinstance(filter_type, Structure):
