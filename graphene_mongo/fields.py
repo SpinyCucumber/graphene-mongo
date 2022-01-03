@@ -152,6 +152,10 @@ class MongoengineConnectionField(ConnectionField):
                         graphene,
                         str(self._type._meta.fields[field].type).replace("!", ""),
                     )
+                    filter_type = self._type._meta.fields[field].type
+                    # Convert to scalar
+                    while isinstance(filter_type, Structure):
+                        filter_type = filter_type._of_type
 
                     # handle special cases
                     advanced_filter_types = {
